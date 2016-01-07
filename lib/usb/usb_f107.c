@@ -19,8 +19,13 @@
 
 #include <string.h>
 #include <libopencm3/cm3/common.h>
+#if defined(GD32F1)
+#include <libopencm3/gd32/tools.h>
+#include <libopencm3/gd32/otg_fs.h>
+#else
 #include <libopencm3/stm32/tools.h>
 #include <libopencm3/stm32/otg_fs.h>
+#endif
 #include <libopencm3/usb/usbd.h>
 #include "usb_private.h"
 #include "usb_fx07_common.h"

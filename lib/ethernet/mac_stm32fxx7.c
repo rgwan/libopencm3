@@ -34,7 +34,11 @@
 #include <string.h>
 #include <libopencm3/ethernet/mac.h>
 #include <libopencm3/ethernet/phy.h>
+#if defined(GD32F1)
+#include <libopencm3/gd32/gpio.h>
+#else
 #include <libopencm3/stm32/gpio.h>
+#endif
 #include <libopencm3/cm3/nvic.h>
 
 /**@{*/

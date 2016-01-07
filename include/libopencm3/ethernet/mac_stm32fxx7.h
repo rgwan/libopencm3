@@ -35,7 +35,11 @@
 #ifndef LIBOPENCM3_ETHERNET_H
 #define LIBOPENCM3_ETHERNET_H
 
+#if defined(GD32F1)
+#include <libopencm3/gd32/memorymap.h>
+#else
 #include <libopencm3/stm32/memorymap.h>
+#endif
 #include <libopencm3/cm3/common.h>
 
 /**@{*/

@@ -33,7 +33,7 @@
 
 /**@{*/
 
-#if defined(STM32F1)
+#if defined(STM32F1) || defined(GD32F1)
 #       include <libopencm3/ethernet/mac_stm32fxx7.h>
 #elif defined(STM32F4)
 #       include <libopencm3/ethernet/mac_stm32fxx7.h>
