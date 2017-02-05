@@ -64,6 +64,14 @@ void st_usbfs_ep_setup(usbd_device *dev, uint8_t addr, uint8_t type,
 		void (*callback) (usbd_device *usbd_dev,
 		uint8_t ep))
 {
+	st_usbfs_ep_setup_core(dev, addr & 0x0f, addr, type, max_size, callback);
+}
+
+void st_usbfs_ep_setup_core(usbd_device *dev, uint8_t phy_addr, uint8_t ep_addr, uint8_t type,
+		uint16_t max_size,
+		void (*callback) (usbd_device *usbd_dev,
+		uint8_t ep))
+{
 	/* Translate USB standard type codes to STM32. */
 	const uint16_t typelookup[] = {
 		[USB_ENDPOINT_ATTR_CONTROL] = USB_EP_TYPE_CONTROL,
@@ -71,33 +79,33 @@ void st_usbfs_ep_setup(usbd_device *dev, uint8_t addr, uint8_t type,
 		[USB_ENDPOINT_ATTR_BULK] = USB_EP_TYPE_BULK,
 		[USB_ENDPOINT_ATTR_INTERRUPT] = USB_EP_TYPE_INTERRUPT,
 	};
-	uint8_t dir = addr & 0x80;
-	addr &= 0x7f;
+	uint8_t dir = ep_addr & 0x80;
+	ep_addr &= 0x7f;
 
 	/* Assign address. */
-	USB_SET_EP_ADDR(addr, addr);
-	USB_SET_EP_TYPE(addr, typelookup[type]);
+	USB_SET_EP_ADDR(phy_addr, ep_addr);
+	USB_SET_EP_TYPE(phy_addr, typelookup[type]);
 
-	if (dir || (addr == 0)) {
-		USB_SET_EP_TX_ADDR(addr, dev->pm_top);
+	if (dir || (ep_addr == 0)) {
+		USB_SET_EP_TX_ADDR(phy_addr, dev->pm_top);
 		if (callback) {
-			dev->user_callback_ctr[addr][USB_TRANSACTION_IN] =
+			dev->user_callback_ctr[phy_addr][USB_TRANSACTION_IN] =
 			    (void *)callback;
 		}
-		USB_CLR_EP_TX_DTOG(addr);
-		USB_SET_EP_TX_STAT(addr, USB_EP_TX_STAT_NAK);
+		USB_CLR_EP_TX_DTOG(phy_addr);
+		USB_SET_EP_TX_STAT(phy_addr, USB_EP_TX_STAT_NAK);
 		dev->pm_top += max_size;
 	}
 
 	if (!dir) {
-		USB_SET_EP_RX_ADDR(addr, dev->pm_top);
-		st_usbfs_set_ep_rx_bufsize(dev, addr, max_size);
+		USB_SET_EP_RX_ADDR(phy_addr, dev->pm_top);
+		st_usbfs_set_ep_rx_bufsize(dev, phy_addr, max_size);
 		if (callback) {
-			dev->user_callback_ctr[addr][USB_TRANSACTION_OUT] =
+			dev->user_callback_ctr[phy_addr][USB_TRANSACTION_OUT] =
 			    (void *)callback;
 		}
-		USB_CLR_EP_RX_DTOG(addr);
-		USB_SET_EP_RX_STAT(addr, USB_EP_RX_STAT_VALID);
+		USB_CLR_EP_RX_DTOG(phy_addr);
+		USB_SET_EP_RX_STAT(phy_addr, USB_EP_RX_STAT_VALID);
 		dev->pm_top += max_size;
 	}
 }

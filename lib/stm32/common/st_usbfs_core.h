@@ -49,6 +49,10 @@ uint16_t st_usbfs_ep_write_packet(usbd_device *usbd_dev, uint8_t addr,
 uint16_t st_usbfs_ep_read_packet(usbd_device *usbd_dev, uint8_t addr,
 				 void *buf, uint16_t len);
 void st_usbfs_poll(usbd_device *usbd_dev);
+void st_usbfs_ep_setup_core(usbd_device *dev, uint8_t phy_addr, uint8_t ep_addr, uint8_t type,
+		uint16_t max_size,
+		void (*callback) (usbd_device *usbd_dev,
+		uint8_t ep));
 
 /* These must be implemented by the device specific driver */
 
